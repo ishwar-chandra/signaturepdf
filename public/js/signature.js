@@ -477,15 +477,12 @@ function uploadSVG(formData, convert = true) {
         document.getElementById('btn_modal_ajouter').focus();
     }
 
-    if (convert === false) {
-        const f = formData.get('file')
-
-        if (f.type === 'image/png') {
-            const fr = new FileReader()
-            fr.onload = (e) => { updateImage(e.target.result) }
-            fr.readAsDataURL(f)
-            return;
-        }
+    const f = formData.get('file');
+    if (f && f.type && f.type.indexOf('image/') === 0 && (convert === false || localOnly)) {
+        const fr = new FileReader()
+        fr.onload = (e) => { updateImage(e.target.result) }
+        fr.readAsDataURL(f)
+        return;
     }
 
     const xhr = new XMLHttpRequest();
@@ -715,7 +712,7 @@ function createAndAddSvgInCanvas(canvas, item, x, y, height = null) {
         return;
     }
 
-    if (item.startsWith('data:image/png')) {
+    if (item.startsWith('data:image/')) {
         fabric.Image.fromURL(item, function(img) {
             img.scaleToHeight(height);
 
@@ -1082,18 +1079,29 @@ function createEventsListener() {
 
     if(document.getElementById('save')) {
         document.getElementById('save').addEventListener('click', async function(event) {
-            if(!pdfHash) {
+            const localSave = !pdfHash;
+            if(localSave) {
                 event.preventDefault()
                 startProcessingMode(this)
             }
 
-            const blob = await save(this);
-
-            if(!pdfHash) {
-                await download(blob, document.querySelector('#text_document_name').title.replace(/\.pdf$/, '_signe.pdf'))
-                await storeFileInCache(blob, document.getElementById('input_pdf').files[0].name)
-                endProcessingMode(this)
-                hasModifications = false;
+            try {
+                const blob = await save(this);
+                if(localSave) {
+                    if(!blob) {
+                        throw new Error('Unable to build the signed PDF');
+                    }
+                    await download(blob, document.querySelector('#text_document_name').title.replace(/\.pdf$/, '_signe.pdf'))
+                    await storeFileInCache(blob, document.getElementById('input_pdf').files[0].name)
+                    hasModifications = false;
+                }
+            } catch (error) {
+                console.error(error);
+                alert(error.message || String(error));
+            } finally {
+                if(localSave) {
+                    endProcessingMode(this)
+                }
             }
         });
     }
@@ -1337,11 +1345,83 @@ function runCron() {
     xhr.send();
 }
 
+function getEditionCanvas(pageIndex) {
+    return canvasEditions.find(function(canvasEdition) {
+        return canvasEdition.lowerCanvasEl && canvasEdition.lowerCanvasEl.id === 'canvas-edition-' + pageIndex;
+    });
+}
+
+function overlayForPage(canvasEdition, pageRotation) {
+    const source = canvasEdition.toCanvasElement(1);
+    const angle = ((pageRotation % 360) + 360) % 360;
+
+    if(angle === 0) {
+        return source;
+    }
+
+    const swap = angle === 90 || angle === 270;
+    const output = document.createElement('canvas');
+    output.width = swap ? source.height : source.width;
+    output.height = swap ? source.width : source.height;
+
+    const context = output.getContext('2d');
+    context.translate(output.width / 2, output.height / 2);
+    context.rotate(-angle * Math.PI / 180);
+    context.drawImage(source, -source.width / 2, -source.height / 2);
+
+    return output;
+}
+
+/**
+ * Flatten the Fabric overlay canvases into the original PDF in the browser.
+ * This keeps the document on the local machine and works without pdftk or
+ * rsvg-convert; the base PDF stays vector, only the overlays become PNGs.
+ */
+async function flattenPDFLocally() {
+    const file = document.getElementById('input_pdf').files[0];
+    if(!file) {
+        throw new Error('Missing PDF');
+    }
+
+    const PDFDocument = window['PDFLib'].PDFDocument;
+    const pdf = await PDFDocument.load(await file.arrayBuffer(), {
+        ignoreEncryption: true,
+        updateMetadata: false
+    });
+    const pages = pdf.getPages();
+
+    for(let index = 0; index < pages.length; index++) {
+        const canvasEdition = getEditionCanvas(index);
+        if(!canvasEdition || canvasEdition.getObjects().length === 0) {
+            continue;
+        }
+
+        const page = pages[index];
+        const rotation = page.getRotation().angle || 0;
+        const overlay = overlayForPage(canvasEdition, rotation);
+        const image = await pdf.embedPng(overlay.toDataURL('image/png'));
+
+        page.drawImage(image, {
+            x: 0,
+            y: 0,
+            width: page.getWidth(),
+            height: page.getHeight()
+        });
+    }
+
+    return new Blob([await pdf.save()], {type: 'application/pdf'});
+}
+
 async function save() {
     let previousScale = currentScale;
     if(currentScale != defaultScale) {
         resizePDF(defaultScale)
         while(!renderComplete) { }
+    }
+    if(!pdfHash && localOnly) {
+        const blob = await flattenPDFLocally();
+        hasModifications = false;
+        return blob;
     }
     let dataTransfer = new DataTransfer();
     canvasEditions.forEach(function(canvasEdition, index) {
@@ -1372,6 +1452,9 @@ async function save() {
 async function pageUpload() {
     document.querySelector('body').classList.remove('bg-light');
     document.getElementById('input_pdf_upload').value = '';
+    if (window.resetUploadFileName) {
+        window.resetUploadFileName();
+    }
     document.getElementById('page-upload').classList.remove('d-none');
     document.getElementById('page-signature').classList.add('d-none');
     document.getElementById('input_pdf_upload').focus();
@@ -1455,6 +1538,9 @@ async function pageSignature(url) {
 
         alert("Le PDF ne doit pas dépasser " + convertOctet2MegoOctet(maxSize) + " Mo");
         document.getElementById('input_pdf_upload').value = "";
+        if (window.resetUploadFileName) {
+            window.resetUploadFileName();
+        }
         return;
     }
 

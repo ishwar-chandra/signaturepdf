@@ -1,0 +1,77 @@
+{
+  "name": "signaturepdf-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local-only Windows desktop build of Signature PDF",
+  "author": "24eme",
+  "license": "AGPL-3.0-only",
+  "main": "main.js",
+  "scripts": {
+    "fetch:php": "node scripts/fetch-php.js",
+    "start": "electron .",
+    "pack": "npm run fetch:php && electron-builder --dir",
+    "dist": "npm run fetch:php && electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "fr.signaturepdf.desktop",
+    "productName": "Signature PDF",
+    "copyright": "Copyright (C) 24eme",
+    "asar": true,
+    "files": [
+      "main.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../",
+        "to": "app",
+        "filter": [
+          "app.php",
+          "lib/**/*",
+          "public/**/*",
+          "templates/**/*",
+          "locale/application.pot",
+          "locale/*/LC_MESSAGES/application.po",
+          "locale/*/LC_MESSAGES/application.mo",
+          "vendor/**/*",
+          "config/config.ini.example",
+          "config/php.ini"
+        ]
+      },
+      {
+        "from": "runtime/php",
+        "to": "php"
+      }
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "SignaturePDF-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Signature PDF",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}

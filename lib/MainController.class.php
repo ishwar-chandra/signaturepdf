@@ -16,7 +16,7 @@ class MainController
         $f3->set('maxSize',  min(array(Config::convertPHPSizeToBytes(ini_get('post_max_size')), Config::convertPHPSizeToBytes(ini_get('upload_max_filesize')))));
         $f3->set('maxPage',  ini_get('max_file_uploads') - 1);
 
-        if(!$f3->get('PDF_STORAGE_PATH')) {
+        if($f3->get('LOCAL_ONLY') || !$f3->get('PDF_STORAGE_PATH')) {
             $f3->set('noSharingMode', true);
         }
 
@@ -34,6 +34,9 @@ class MainController
     }
 
     function signatureHash(Base $f3) {
+        if ($f3->get('LOCAL_ONLY')) {
+            $f3->error(403);
+        }
         $f3->set('hash', Web::instance()->slug($f3->get('PARAMS.hash')));
         $f3->set('maxSize',  min(array(Config::convertPHPSizeToBytes(ini_get('post_max_size')), Config::convertPHPSizeToBytes(ini_get('upload_max_filesize')))));
         $f3->set('maxPage',  ini_get('max_file_uploads') - 1);
@@ -137,6 +140,9 @@ class MainController
     }
 
     function share(Base $f3) {
+        if ($f3->get('LOCAL_ONLY')) {
+            $f3->error(403);
+        }
         if (!is_dir($f3->get('PDF_STORAGE_PATH'))) {
             $f3->error(500, 'Sharing folder doesn\'t exist');
         }
@@ -195,6 +201,9 @@ class MainController
     }
 
     function signatureDeletion(Base $f3) {
+        if ($f3->get('LOCAL_ONLY')) {
+            $f3->error(403);
+        }
         $sharingFolder = $f3->get('PDF_STORAGE_PATH');
         $baseHash = $sharingFolder.Web::instance()->slug($f3->get('PARAMS.hash'));
 
@@ -219,6 +228,9 @@ class MainController
     }
 
     function signaturePdf(Base $f3) {
+        if ($f3->get('LOCAL_ONLY')) {
+            $f3->error(403);
+        }
         $f3->set('activeTab', 'sign');
         $hash = Web::instance()->slug($f3->get('PARAMS.hash'));
         $symmetricKey = (isset($_COOKIE[$hash])) ? GPGCryptography::protectSymmetricKey($_COOKIE[$hash]) : null;
@@ -237,6 +249,9 @@ class MainController
     }
 
     function signatureSave(Base $f3) {
+        if ($f3->get('LOCAL_ONLY')) {
+            $f3->error(403);
+        }
         $hash = Web::instance()->slug($f3->get('PARAMS.hash'));
         $symmetricKey = (isset($_COOKIE[$hash])) ? GPGCryptography::protectSymmetricKey($_COOKIE[$hash]) : null;
         $pdfSignature = new PDFSignature($f3->get('PDF_STORAGE_PATH').$hash, $symmetricKey);
@@ -275,6 +290,9 @@ class MainController
     }
 
     function signatureNblayers(Base $f3) {
+        if ($f3->get('LOCAL_ONLY')) {
+            $f3->error(403);
+        }
         $f3->set('activeTab', 'sign');
         $hash = Web::instance()->slug($f3->get('PARAMS.hash'));
         $symmetricKey = (isset($_COOKIE[$hash])) ? GPGCryptography::protectSymmetricKey($_COOKIE[$hash]) : null;
@@ -283,6 +301,10 @@ class MainController
     }
 
     function cron(Base $f3) {
+        if ($f3->get('LOCAL_ONLY')) {
+            http_response_code(204);
+            return;
+        }
         $sharingFolder = $f3->get('PDF_STORAGE_PATH');
         foreach(glob($sharingFolder.'*.expire') as $expireFile) {
             if(filemtime($expireFile) > time()) {
@@ -301,6 +323,11 @@ class MainController
     function organization(Base $f3) {
         $f3->set('activeTab', 'organize');
         echo View::instance()->render('organization.html.php');
+    }
+
+    function imageToPdf(Base $f3) {
+        $f3->set('activeTab', 'image-to-pdf');
+        echo View::instance()->render('image-to-pdf.html.php');
     }
 
     function metadata(Base $f3) {
@@ -383,10 +410,28 @@ class MainController
 
         $filePath = reset(array_keys($files));
 
+        $targetBytes = null;
+        $targetSize = $f3->get('POST.targetSize');
+        if ($targetSize !== null && $targetSize !== '') {
+            if (!is_numeric($targetSize) || (int) $targetSize <= 0) {
+                http_response_code("400");
+                header('Content-Type: text/plain');
+                echo _("Invalid target size");
+                return;
+            }
+            $targetBytes = (int) $targetSize * 1000;
+            if ($targetBytes < 5000) {
+                http_response_code("400");
+                header('Content-Type: text/plain');
+                echo _("The target size must be at least 5 KB");
+                return;
+            }
+        }
+
         $compression = new Compression($filePath);
 
         try {
-            $output = $compression->compress($f3->get('POST.compressionType'));
+            $output = $compression->compress($f3->get('POST.compressionType'), $targetBytes);
         } catch(Exception $e ){
             $compression->clean();
             http_response_code("500");
@@ -399,6 +444,12 @@ class MainController
             $compression->clean();
             http_response_code("204");
             return;
+        }
+
+        if ($targetBytes !== null) {
+            header('X-Compression-Target-Met: '.($compression->isTargetMet() ? 'true' : 'false'));
+            header('X-Compression-Target-Size: '.$targetBytes);
+            header('X-Compressed-Size: '.filesize($output));
         }
 
         Web::instance()->send($output, null, 0, TRUE, urlencode(basename(str_replace(".pdf", "_compressed.pdf", $originalFilename))));

@@ -39,12 +39,16 @@ Open-source software under the AGPL V3 license.
     - [Linux Alpine](installation.md#alpine)
     - [Package](installation.md#package)
 - [Configuration](#configuration)
+    - [Enabling local-only mode](#enabling-local-only-mode)
     - [Enabling and Configuring Multi-Signature Mode](#enabling-and-configuring-multi-signature-mode)
     - [Disabling the Organize Mode](#disabling-the-organize-mode)
     - [Hiding or Modifying the Demo PDF Link](#hiding-or-modifying-the-demo-pdf-link)
     - [Customize the CSS](#customize-the-css)
     - [Custom retention period for shared PDF](#custom-retention-period-for-shared-pdf)
     - [Default Fields for Metadata Editing](#default-fields-for-metadata-editing)
+- [Compression target size](#compression-target-size)
+- [Images to PDF](#images-to-pdf)
+- [Windows desktop app (local only)](#windows-desktop-app-local-only)
 - [Update](#update)
 - [Tests](#tests)
 - [Libraries Used](#libraries-used)
@@ -59,6 +63,13 @@ Open-source software under the AGPL V3 license.
 - [Package](installation.md#package)
 
 ## Configuration
+
+### Enabling local-only mode
+
+Set `LOCAL_ONLY=true` in `config/config.ini` to disable shared/server-side PDF
+storage and hide the sharing controls. This is the mode used by the Windows
+desktop build; signing, compression and image conversion then stay on the
+machine.
 
 ### Enabling and Configuring Multi-Signature Mode
 
@@ -179,6 +190,46 @@ METADATA_DEFAULT_FIELDS[field2].type = "text"
 METADATA_DEFAULT_FIELDS[field3].type = "date"
 METADATA_DEFAULT_FIELDS[field4].type = "number"
 ```
+
+## Compression target size
+
+In **Compress**, leave the target size empty to use a quality preset, or enter a
+size in KB. The server lowers Ghostscript's image resolution and quality until
+the PDF fits; if it cannot reach the target, the browser engine rasterizes the
+pages as a fallback and the result card reports whether the target was reached.
+This is useful for upload limits and email attachments.
+
+## Images to PDF
+
+The **Images** tab (`/image-to-pdf`) combines several PNG/JPEG files into one
+PDF locally in the browser. Images can be reordered, removed, and placed on A4,
+Letter, or image-sized pages with an optional margin. No image is uploaded.
+
+## Windows desktop app (local only)
+
+A self-contained Windows build is available in `desktop/`. It runs a bundled
+PHP server on `127.0.0.1` and keeps every PDF on the machine: signing,
+image-to-PDF conversion and compression run locally, and sharing/server storage
+are disabled.
+
+```powershell
+cd desktop
+npm install
+npm run fetch:php
+npm run dist
+```
+
+The installer is written to `desktop/dist/SignaturePDF-Setup-<version>.exe`.
+See [desktop/README.md](desktop/README.md) for build requirements, privacy
+details and limitations.
+
+The desktop build includes:
+
+- target-size compression: enter a size in KB and the compressor lowers quality
+  until the PDF fits (Ghostscript is used when installed, otherwise the browser
+  engine is used);
+- an image-to-PDF converter that combines several PNG/JPEG files locally;
+- the same signature, organize and metadata tools without uploading files.
 
 ## Update
 

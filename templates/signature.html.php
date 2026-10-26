@@ -14,7 +14,7 @@
 <div id="page-upload">
     <?php include "components/navtab.html.php"; ?>
     <div class="px-3 py-3 text-center fullpage">
-        <i class="bi bi-vector-pen display-3"></i>
+        <i class="bi bi-vector-pen display-3 icon-sign"></i>
         <h1 class="mb-0 h2 mt-3"><?php echo _("Sign a PDF"); ?></h1>
         <p class="text-nowrap mt-2 pb-2" style="overflow: hidden; text-overflow: ellipsis;"><?php echo _("Sign, initial, stamp, complete a document"); ?></p>
         <?php $uploadHelp = _("The PDF should not exceed")." ".round($maxSize / 1000 / 1000)." "._("MB and")." ".$maxPage." "._("pages"); ?>
@@ -40,7 +40,7 @@
     <div class="offcanvas offcanvas-end show d-none d-md-block shadow-sm" data-bs-backdrop="false" data-bs-scroll="true" data-bs-keyboard="false" tabindex="-1" id="sidebarTools" aria-labelledby="sidebarToolsLabel">
         <a id="btn_exit" class="btn btn-close btn-sm position-absolute d-none d-sm-none d-md-block" style="right: 16px; top: 16px;" title="<?php echo _("Close this PDF and return to the homepage"); ?>" href="<?php echo $REVERSE_PROXY_URL; ?>/signature"></a>
         <div class="offcanvas-header mb-0 pb-0">
-            <h5 class="mb-1 d-block w-100" id="sidebarToolsLabel"><i class="bi bi-vector-pen"></i> <?php echo _("PDF Signature"); ?> <?php if(isset($hash)): ?><span class="badge rounded-pill text-bg-dark" title="<?php echo _("This PDF is shared with others to be signed by multiple people"); ?>"><span class="nblayers"></span> <i class="bi bi-people-fill"></i></span><?php endif; ?></h5>
+            <h5 class="mb-1 d-block w-100" id="sidebarToolsLabel"><i class="bi bi-vector-pen icon-sign"></i> <?php echo _("PDF Signature"); ?> <?php if(isset($hash)): ?><span class="badge chip chip-count" title="<?php echo _("This PDF is shared with others to be signed by multiple people"); ?>"><span class="nblayers"></span> <i class="bi bi-people-fill"></i></span><?php endif; ?></h5>
             <button type="button" class="btn-close text-reset d-md-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body pt-0">
@@ -118,7 +118,7 @@
                 <?php elseif(!isset($noSharingMode)): ?>
                   <div class="d-none d-sm-none d-md-block position-relative">
                       <a id="btn-signature-help" class="position-absolute top-0 end-0 text-dark" href="" style="z-index: 5;"><i class="bi bi-question-circle"></i></a>
-                      <p id="nblayers_text" class="small d-none mb-2 opacity-75"><?php echo sprintf(_("You are %s to have signed this PDF"), "<span class='badge rounded-pill border border-dark text-dark'><span class='nblayers'>0</span> <i class='bi bi-people-fill'></i></span>"); ?></p>
+                      <p id="nblayers_text" class="small d-none mb-2 opacity-75"><?php echo sprintf(_("You are %s to have signed this PDF"), "<span class='badge chip chip-count'><span class='nblayers'>0</span> <i class='bi bi-people-fill'></i></span>"); ?></p>
                   </div>
                   <div class="btn-group w-100">
                       <a id="btn_download" class="btn btn-outline-dark w-100" href="<?php echo $REVERSE_PROXY_URL; ?>/signature/<?php echo $hash ?>/pdf"><?php echo sprintf(_("%s Download the PDF"), '<i class="bi bi-download"></i>'); ?></a>
@@ -334,7 +334,7 @@
         <div class="toolbox-action" data-action="delete" title="<?php echo _("Delete the element") ?>"><i class="bi bi-trash3"></i></div>
     </template>
 
-    <?php $loadJs = ['pdf.js' => true]; include('components/common.html.php'); ?>
+    <?php $loadJs = ['pdf.js' => true, 'pdf-lib.js' => true]; include('components/common.html.php'); ?>
     <script src="<?php echo $REVERSE_PROXY_URL; ?>/vendor/fabric.min.js?5.4.0"></script>
     <script src="<?php echo $REVERSE_PROXY_URL; ?>/vendor/signature_pad.umd.min.js?5.0.3"></script>
     <script src="<?php echo $REVERSE_PROXY_URL; ?>/vendor/opentype.min.js?1.3.4"></script>
@@ -342,6 +342,7 @@
     var maxSize = <?php echo $maxSize ?>;
     var maxPage = <?php echo $maxPage ?>;
     var sharingMode = <?php echo intval(!isset($noSharingMode)) ?>;
+    var localOnly = <?php echo intval($LOCAL_ONLY) ?>;
     var pdfHash = null;
     var openModal = null;
     <?php if(Flash::instance()->hasKey('openModal')): ?>

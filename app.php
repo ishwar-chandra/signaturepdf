@@ -26,6 +26,7 @@ $f3->route('POST @signature_save: /signature/@hash/save', 'MainController->signa
 $f3->route('GET @signature_nblayers: /signature/@hash/nblayers', 'MainController->signatureNblayers');
 $f3->route('GET @cron: /cron', 'MainController->cron');
 $f3->route('GET @organization: /organization', 'MainController->organization');
+$f3->route('GET @image_to_pdf: /image-to-pdf', 'MainController->imageToPdf');
 $f3->route('GET @metadata: /metadata', 'MainController->metadata');
 $f3->route('GET @ocr: /ocr', 'MainController->metadata');
 $f3->route('POST @ocr: /ocr', 'MainController->ocr');
@@ -33,8 +34,9 @@ $f3->route('GET @administration: /administration', 'MainController->administrati
 $f3->route('GET @compression: /compress', 'MainController->compression');
 $f3->route('POST @compress: /compress', 'MainController->compress');
 
+$f3->route('GET @api_capabilities: /api/capabilities', 'ApiController->capabilities');
 $f3->route('GET @api_file_get: /api/file/get', 'ApiController->fileGet');
-$f3->route('GET @api_file_save: /api/file/get', 'ApiController->fileSave');
+$f3->route('PUT @api_file_save: /api/file/save', 'ApiController->fileSave');
 $f3->route('POST @api_share_new: /api/share/new', 'ApiController->shareNew');
 $f3->route('GET @api_share_get: /api/share/get/@hash/@symmkey', 'ApiController->shareGet');
 $f3->route('GET @api_share_delete: /api/share/delete/@hash/@adminkey', 'ApiController->shareDelete');

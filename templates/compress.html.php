@@ -16,13 +16,21 @@
     <div class="px-3 py-3 text-center fullpage">
         <a id="btn_exit" class="btn btn-close btn-sm position-absolute d-none" style="right: 16px;" title="<?php echo _("Close this PDF and return to the homepage"); ?>" href="<?php echo $REVERSE_PROXY_URL; ?>/signature"></a>
         <form id="form_compress" method="post" action="<?php echo $REVERSE_PROXY_URL; ?>/compress" enctype="multipart/form-data">
-            <i class="bi bi-chevron-bar-contract display-3"></i>
+            <i class="bi bi-chevron-bar-contract display-3 icon-compress"></i>
             <h1 class="mb-0 h2 mt-3"><?php echo sprintf(_("%s Compress a PDF"), ""); ?></h1>
             <p class="text-nowrap mt-2 pb-2" style="overflow: hidden; text-overflow: ellipsis;"><?php echo _("Reduce the size of a PDF"); ?></p>
             <?php $uploadHelp = sprintf(_("The PDF must not exceed %s Mb"), round($maxSize / 1000 / 1000)); ?>
             <?php $uploadNoDemo = true; ?>
             <?php include "components/upload.html.php"; ?>
             <div class="col-md-6 col-lg-5 col-xl-4 col-xxl-3 mx-auto">
+                <div class="mt-4 text-start">
+                    <label for="target_size_kb" class="form-label small mb-1"><?php echo _("Target size (optional)"); ?></label>
+                    <div class="input-group input-group-sm">
+                        <input type="number" min="5" step="1" class="form-control" id="target_size_kb" name="targetSize" placeholder="<?php echo _("e.g. 500"); ?>" inputmode="numeric" />
+                        <span class="input-group-text">KB</span>
+                    </div>
+                    <div class="form-text"><?php echo _("The PDF is reduced until it fits this size. Very small targets may lower quality and remove selectable text. Local mode keeps the file on your computer."); ?></div>
+                </div>
                 <div class="btn-group mt-4 mb-2 opacity-25">
                     <button type="submit" name="compressionType" value="medium" id="compressBtn" class="btn btn-primary" disabled data-loading-text="<?php echo _("Compressing") ?>"><i class="bi bi-chevron-bar-contract"></i> <?php echo _("Compress"); ?></button>
                     <button type="button" id="dropdownMenuReference" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" data-bs-reference="parent" disabled>
@@ -54,13 +62,22 @@
     <?php include('components/footer.html.php'); ?>
 </div>
 
-<?php include('components/common.html.php'); ?>
+<?php $loadJs = ['pdf.js' => true, 'pdf-lib.js' => true]; include('components/common.html.php'); ?>
 <script>
     var maxSize = <?php echo $maxSize ?>;
+    var localOnly = <?php echo intval($LOCAL_ONLY) ?>;
     var trad = <?php echo json_encode([
-        'Your pdf is already optimized' => _("Your pdf is already optimized")
+        'Your pdf is already optimized' => _("Your pdf is already optimized"),
+        'Target size reached' => _("Target size reached"),
+        'The target size could not be reached. The smallest PDF is shown.' => _("The target size could not be reached. The smallest PDF is shown."),
+        'The PDF is already smaller than the target size' => _("The PDF is already smaller than the target size"),
+        'Browser compression is not available' => _("Browser compression is not available"),
+        'The target size must be at least 5 KB' => _("The target size must be at least 5 KB"),
+        'Compressing page %s of %s' => _("Compressing page %s of %s"),
+        'Compressing page %s of %s (attempt %s)' => _("Compressing page %s of %s (attempt %s)")
     ]); ?>;
 </script>
+<script src="<?php echo $REVERSE_PROXY_URL; ?>/js/pdf-compressor.js?<?php echo ($COMMIT) ? $COMMIT : filemtime($ROOT."/public/js/pdf-compressor.js") ?>"></script>
 <script src="<?php echo $REVERSE_PROXY_URL; ?>/js/compress.js?<?php echo ($COMMIT) ? $COMMIT : filemtime($ROOT."/public/js/compress.js") ?>"></script>
 </body>
 </html>

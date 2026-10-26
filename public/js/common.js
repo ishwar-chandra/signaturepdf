@@ -1,4 +1,4 @@
-const modalLoading = new bootstrap.Modal('#modalLoading')
+let modalLoading = null;
 let davTokenReceived = null;
 const isIframe = window.parent !== window;
 
@@ -146,13 +146,34 @@ function endProcessingMode(btn) {
     endLoading();
 }
 
+function loadingModal() {
+    if (modalLoading) {
+        return modalLoading;
+    }
+    const element = document.getElementById('modalLoading');
+    if (element && typeof bootstrap !== 'undefined') {
+        modalLoading = bootstrap.Modal.getOrCreateInstance(element);
+    }
+    return modalLoading;
+}
+
 function showLoading(message) {
-    document.getElementById('modalLoading').querySelector('p').innerText = message
-    modalLoading.show();
+    const element = document.getElementById('modalLoading');
+    if (!element) {
+        return;
+    }
+    element.querySelector('p').innerText = message;
+    const modal = loadingModal();
+    if (modal) {
+        modal.show();
+    }
 }
 
 function endLoading() {
-    modalLoading.hide();
+    const modal = loadingModal();
+    if (modal) {
+        modal.hide();
+    }
 }
 
 function download(blob, filename) {
@@ -336,3 +357,82 @@ if(document.getElementById('btn_exit')) {
         }
     });
 }
+
+/* Theme toggle: the initial theme is applied by an inline script in <head>. */
+(function () {
+    const key = 'signaturepdf-theme';
+    const toggle = document.getElementById('theme-toggle');
+
+    function applyTheme(theme, persist) {
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        document.documentElement.style.colorScheme = theme;
+
+        if (persist) {
+            try {
+                localStorage.setItem(key, theme);
+            } catch (e) {}
+        }
+
+        if (!toggle) {
+            return;
+        }
+
+        const isDark = theme === 'dark';
+        const label = isDark ? toggle.dataset.labelLight : toggle.dataset.labelDark;
+        const icon = document.getElementById('theme-toggle-icon');
+        const text = document.getElementById('theme-toggle-label');
+
+        toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+        toggle.setAttribute('aria-label', label);
+        toggle.title = label;
+
+        if (icon) {
+            icon.className = 'bi ' + (isDark ? 'bi-sun-fill' : 'bi-moon-stars-fill');
+        }
+        if (text) {
+            text.textContent = isDark ? toggle.dataset.textLight : toggle.dataset.textDark;
+        }
+    }
+
+    function storedTheme() {
+        try {
+            const saved = localStorage.getItem(key);
+            if (saved === 'dark' || saved === 'light') {
+                return saved;
+            }
+        } catch (e) {}
+        return document.documentElement.getAttribute('data-bs-theme') || 'light';
+    }
+
+    function initThemeToggle() {
+        applyTheme(storedTheme(), false);
+
+        if (toggle) {
+            toggle.addEventListener('click', function () {
+                applyTheme(document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark', true);
+            });
+        }
+
+        if (window.matchMedia) {
+            const query = window.matchMedia('(prefers-color-scheme: dark)');
+            const onChange = function (event) {
+                try {
+                    if (!localStorage.getItem(key)) {
+                        applyTheme(event.matches ? 'dark' : 'light', false);
+                    }
+                } catch (e) {}
+            };
+            if (query.addEventListener) {
+                query.addEventListener('change', onChange);
+            } else if (query.addListener) {
+                query.addListener(onChange);
+            }
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initThemeToggle);
+    } else {
+        initThemeToggle();
+    }
+})();

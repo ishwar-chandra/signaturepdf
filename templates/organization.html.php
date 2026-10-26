@@ -14,7 +14,7 @@
     <div id="page-upload">
         <?php include "components/navtab.html.php"; ?>
         <div class="px-3 py-3 text-center fullpage">
-            <i class="bi bi-ui-checks-grid display-3"></i>
+            <i class="bi bi-ui-checks-grid display-3 icon-organize"></i>
             <h1 class="mb-0 h2 mt-3"><?php echo sprintf(_("%s Organize PDF"), ""); ?></h1>
             <p class="text-nowrap mt-2 pb-2" style="overflow: hidden; text-overflow: ellipsis;"><?php echo _("Merge, sort, rotate, delete, extract pages"); ?></p>
             <?php $uploadImgAuhtorized = true; ?>

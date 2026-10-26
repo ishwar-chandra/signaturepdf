@@ -15,7 +15,7 @@
 <div id="page-upload">
     <?php include('components/navtab.html.php'); ?>
     <div class="px-3 py-3 text-center fullpage">
-        <i class="bi bi-tags display-3"></i>
+        <i class="bi bi-tags display-3 icon-metadata"></i>
         <h1 class="mb-0 h2 mt-3"><?php echo sprintf(_("%s Edit metadata"), ""); ?></h1>
         <p class="text-nowrap mt-2 pb-2" style="overflow: hidden; text-overflow: ellipsis;"><?php echo _("Add, edit, or remove metadata from a PDF"); ?></p>
         <?php $uploadImgAuhtorized = true; ?>
@@ -29,10 +29,10 @@
         <div class="bg-white sticky-top pt-2">
         <ul class="nav nav-tabs">
           <li class="nav-item ms-4">
-            <button type="button" id="nav-link-metadata" class="nav-link <?php echo ($ALIAS != 'ocr') ? "active" : null ?>" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#form-metadata"><?php echo _("Metadata") ?> <span class="badge rounded-pill text-bg-light border border-dark-subtle text-secondary ms-2 "><span>0</span> <i class="bi bi-tags"></i></span></button>
+            <button type="button" id="nav-link-metadata" class="nav-link <?php echo ($ALIAS != 'ocr') ? "active" : null ?>" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#form-metadata"><?php echo _("Metadata") ?> <span class="badge chip chip-count ms-2"><span>0</span> <i class="bi bi-tags"></i></span></button>
           </li>
           <li class="nav-item ms-2">
-            <button type="button" id="nav-link-text" class="nav-link <?php echo ($ALIAS == 'ocr') ? "active" : null ?>" href="#" data-bs-toggle="tab" data-bs-target="#tab-text"><?php echo _("Text") ?> <span class="badge rounded-pill text-bg-light border border-dark-subtle text-secondary ms-2" ></span></button>
+            <button type="button" id="nav-link-text" class="nav-link <?php echo ($ALIAS == 'ocr') ? "active" : null ?>" href="#" data-bs-toggle="tab" data-bs-target="#tab-text"><?php echo _("Text") ?> <span class="badge chip chip-count ms-2"></span></button>
           </li>
         </ul>
         </div>
@@ -76,7 +76,7 @@
     <div class="offcanvas offcanvas-end show d-none d-md-block shadow-sm" data-bs-backdrop="false" data-bs-scroll="true" data-bs-keyboard="false" tabindex="-1" id="sidebarTools" aria-labelledby="sidebarToolsLabel">
         <a id="btn_exit" class="btn btn-close btn-sm position-absolute d-none d-sm-none d-md-block" style="right: 16px; top: 16px;" title="<?php echo _("Close this PDF and return to the home page"); ?>" href="/metadata"></a>
         <div class="offcanvas-header d-block mb-0 pb-0 border-bottom">
-            <h5 class="mb-1 d-block w-100" id="sidebarToolsLabel"><i class="bi bi-tags"></i> <?php echo _("Edit metadata"); ?></h5>
+            <h5 class="mb-1 d-block w-100" id="sidebarToolsLabel"><i class="bi bi-tags icon-metadata"></i> <?php echo _("Edit metadata"); ?></h5>
             <button type="button" class="btn-close text-reset d-md-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             <p id="text_document_name" class="text-muted mb-2" style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title=""><i class="bi bi-files"></i> <span></span></p>
         </div>

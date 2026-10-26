@@ -58,7 +58,21 @@ class Config
         $this->f3->set('UPLOADS', sys_get_temp_dir()."/");
         $this->f3->set('COMMIT', $this->getCommit());
 
-        $this->f3->config($this->f3->get('ROOT').'/config/config.ini');
+        $configFile = getenv('SIGNATUREPDF_CONFIG');
+        $configFile = $configFile ?: $this->f3->get('ROOT').'/config/config.ini';
+        if (is_file($configFile)) {
+            $this->f3->config($configFile);
+        }
+
+        $localOnly = $this->f3->get('LOCAL_ONLY');
+        $this->f3->set('LOCAL_ONLY', $localOnly === true
+            || in_array(strtolower((string) $localOnly), array('1', 'true', 'yes', 'on'), true));
+
+        if ($this->f3->get('LOCAL_ONLY')) {
+            $this->f3->set('PDF_STORAGE_PATH', null);
+            $this->f3->set('PDF_STORAGE_ENCRYPTION', false);
+        }
+
         if (!$this->f3->exists('REVERSE_PROXY_URL')) {
             $this->f3->set('REVERSE_PROXY_URL', '');
         }
@@ -96,7 +110,19 @@ class Config
         }
 
 
-        $domain = basename(glob($this->f3->get('ROOT')."/locale/application_*.pot")[0], '.pot');
+        $potFiles = glob($this->f3->get('ROOT')."/locale/application_*.pot");
+        $domain = 'application';
+        if ($potFiles) {
+            $candidate = basename($potFiles[0], '.pot');
+            $moFiles = glob($this->f3->get('ROOT').'/locale/*/LC_MESSAGES/'.$candidate.'.mo');
+            if ($moFiles) {
+                // Windows checkouts may materialize symlinks as text files.
+                $magic = @file_get_contents($moFiles[0], false, null, 0, 4);
+                if ($magic === "\xde\x12\x04\x95" || $magic === "\x95\x04\x12\xde") {
+                    $domain = $candidate;
+                }
+            }
+        }
 
         bindtextdomain($domain, $this->f3->get('ROOT')."/locale");
         textdomain($domain);
@@ -176,6 +202,10 @@ class Config
             setcookie("LANGUAGE", $langSupported, ['expires' => $cookieDate, 'samesite' => 'Strict', 'path' => "/"]);
         }
         putenv("LANGUAGE=$langSupported");
+        if (DIRECTORY_SEPARATOR === '\\') {
+            // libintl on Windows reads LANG rather than LANGUAGE in some builds.
+            putenv("LANG=$langSupported");
+        }
     }
 
     public static function convertPHPSizeToBytes($sSize)

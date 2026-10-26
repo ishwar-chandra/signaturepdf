@@ -2,6 +2,15 @@
 
 class ApiController
 {
+    function capabilities(Base $f3) {
+        header('Content-Type: application/json');
+        echo json_encode(array(
+            'ghostscript' => Compression::findGhostscript() !== null,
+            'localOnly' => (bool) $f3->get('LOCAL_ONLY'),
+            'sharing' => (bool) $f3->get('PDF_STORAGE_PATH') && !$f3->get('LOCAL_ONLY'),
+        ));
+    }
+
     function fileGet(Base $f3) {
         if (!($pdf_path = Config::getInstance()->getApiLocalFilePath())) {
             $f3->error(403);
@@ -42,6 +51,10 @@ class ApiController
     }
 
     function shareNew(Base $f3) {
+        if ($f3->get('LOCAL_ONLY')) {
+            echo json_encode(array('message' => 'Sharing is disabled in local mode'));
+            return http_response_code(403);
+        }
         if (! is_dir($f3->get('PDF_STORAGE_PATH'))) {
             echo json_encode(['message' => 'Sharing folder doesn\'t exist']);
             return http_response_code(500);
@@ -108,6 +121,10 @@ class ApiController
     }
 
     function shareDelete(Base $f3) {
+        if ($f3->get('LOCAL_ONLY')) {
+            echo json_encode(array('message' => 'Sharing is disabled in local mode'));
+            return http_response_code(403);
+        }
         $sharingFolder = $f3->get('PDF_STORAGE_PATH');
         $baseHash = $sharingFolder.Web::instance()->slug($f3->get('PARAMS.hash'));
 
@@ -137,6 +154,10 @@ class ApiController
     }
 
     function shareGet(Base $f3) {
+        if ($f3->get('LOCAL_ONLY')) {
+            echo json_encode(array('message' => 'Sharing is disabled in local mode'));
+            return http_response_code(403);
+        }
         $path = Web::instance()->slug($f3->get('PARAMS.hash'));
         $symmetricKey = GPGCryptography::protectSymmetricKey($f3->get('PARAMS.symmkey'));
 
