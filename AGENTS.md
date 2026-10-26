@@ -80,7 +80,7 @@ Signature PDF (`24eme/signaturepdf`, AGPL-3.0) is a free web application for **s
 | `desktop/` | Electron wrapper, pinned PHP runtime downloader, NSIS build config |
 | `tools/` | `create_nss_certs.sh` for `pdfsig` certificates |
 | `vendor/fatfree/` | Vendored Fat-Free framework; treat as third-party, do not refactor |
-| `.debian/`, `.github/` | Debian packaging and the Docker publish workflow |
+| `.debian/`, `.github/` | Debian packaging, Docker publishing and Windows desktop releases |
 
 ## Development Commands
 
@@ -246,7 +246,7 @@ DEBUG=1 make test                           # headed; afterAll returns early (se
 - Requires `php` on `PATH`, `rsvg-convert`, `pdftk`, ImageMagick (`convert`), `mkbitmap`, `potrace`, and a Puppeteer-downloaded Chromium. No database, Redis, or network service is needed for the ephemeral flow.
 - `make test` installs **unpinned** latest Jest/Puppeteer. The spec uses legacy Puppeteer APIs (`page.waitForTimeout`, `page._client`); if startup fails, pin Puppeteer ≤ 21 or modernize the spec.
 - The spec was last updated in 2022 and assumes the legacy homepage exposes `#input_pdf_upload`. The current `/` (`templates/index.html.php`) is a tool chooser with no upload input, so the first test will fail until the spec navigates to `/signature` (or the test is updated). Treat a green run as meaningful only after that assumption is fixed.
-- CI (`.github/workflows/docker.yaml`) only builds/pushes the Docker image. **No test or lint job runs on pull requests.**
+- CI builds/pushes the Docker image (`.github/workflows/docker.yaml`). `.github/workflows/windows-desktop.yaml` builds the NSIS installer on `windows-latest` for `v*` tags and publishes the `.exe` plus SHA-256 checksum as a GitHub Release; manual dispatch uploads the artifact only. **No test or lint job runs on pull requests.**
 - `DEBUG=1` skips teardown intentionally for inspection; kill the spawned `php -S` and Chromium manually afterward.
 
 ### Manual verification

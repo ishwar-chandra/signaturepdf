@@ -40,6 +40,32 @@ npm start
 Set `SIGNATUREPDF_URL=http://localhost:8000` to attach the Electron window to
 an already-running development server instead of spawning PHP.
 
+## Releases
+
+Pushing a tag such as `v1.0.0` runs
+`.github/workflows/windows-desktop.yaml` on `windows-latest`. The workflow:
+
+1. Installs the desktop dependencies.
+2. Stamps `desktop/package.json` with the tag version, so the installer filename
+   matches the release.
+3. Downloads the pinned PHP runtime and builds the NSIS installer.
+4. Generates a SHA-256 checksum.
+5. Uploads the installer as a workflow artifact.
+6. Publishes a GitHub Release containing the installer and checksum, with
+   generated release notes.
+
+Tags containing a hyphen (for example `v1.0.0-beta.1`) are published as
+prereleases. A manual `workflow_dispatch` run builds and uploads the artifact
+without creating a release.
+
+Optional signing secrets:
+
+- `WINDOWS_CSC_LINK`
+- `WINDOWS_CSC_KEY_PASSWORD`
+
+Without them the installer is unsigned and Windows SmartScreen may warn on
+first launch.
+
 ## What is local
 
 - **Signing**: the original PDF and overlay layers are flattened with pdf-lib
