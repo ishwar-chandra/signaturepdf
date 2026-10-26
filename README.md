@@ -49,6 +49,7 @@ Open-source software under the AGPL V3 license.
 - [Compression target size](#compression-target-size)
 - [Images to PDF](#images-to-pdf)
 - [Windows desktop app (local only)](#windows-desktop-app-local-only)
+    - [Build from source](#build-from-source)
 - [Update](#update)
 - [Tests](#tests)
 - [Libraries Used](#libraries-used)
@@ -207,10 +208,17 @@ Letter, or image-sized pages with an optional margin. No image is uploaded.
 
 ## Windows desktop app (local only)
 
-A self-contained Windows build is available in `desktop/`. It runs a bundled
-PHP server on `127.0.0.1` and keeps every PDF on the machine: signing,
-image-to-PDF conversion and compression run locally, and sharing/server storage
-are disabled.
+A self-contained Windows 10/11 x64 build is available. Download the latest
+`SignaturePDF-Setup-<version>.exe` and its SHA-256 checksum from
+[GitHub Releases](../../releases/latest).
+
+The app runs a bundled PHP server on `127.0.0.1` and keeps every PDF on the
+machine: signing, image-to-PDF conversion and compression run locally, and
+sharing/server storage are disabled.
+
+### Build from source
+
+Building requires Windows 10/11 x64 and Node.js 20+.
 
 ```powershell
 cd desktop
@@ -220,7 +228,12 @@ npm run dist
 ```
 
 The installer is written to `desktop/dist/SignaturePDF-Setup-<version>.exe`.
-See [desktop/README.md](desktop/README.md) for build requirements, privacy
+The per-user installer does not require administrator rights. It is currently
+unsigned, so Windows SmartScreen may warn on first launch.
+
+Releases are built automatically by GitHub Actions when a `v*` tag is pushed;
+each release includes the installer and a SHA-256 checksum. See
+[desktop/README.md](desktop/README.md) for build requirements, signing, release
 details and limitations.
 
 The desktop build includes:

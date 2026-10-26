@@ -70,11 +70,15 @@ sudo service apache2 restart
 
 ## [Windows desktop](#windows-desktop)
 
-The `desktop/` directory builds a local-only Windows installer. It bundles PHP
+Download the latest Windows 10/11 x64 installer
+`SignaturePDF-Setup-<version>.exe` and its SHA-256 checksum from
+[GitHub Releases](../../releases/latest). The local-only app bundles PHP
 and runs it on `127.0.0.1`; signing, image-to-PDF conversion and compression
 are performed locally, and shared/server storage is disabled.
 
-Requirements: Windows 10/11 x64, Node.js 20+, npm.
+### [Build from source](#build-from-source)
+
+Building requires Windows 10/11 x64, Node.js 20+, and npm.
 
 ```powershell
 cd desktop
@@ -83,9 +87,11 @@ npm run fetch:php
 npm run dist
 ```
 
-The installer is `desktop/dist/SignaturePDF-Setup-<version>.exe`. See
-[desktop/README.md](desktop/README.md) for details. Ghostscript is optional; if
-it is not installed, compression uses the browser engine.
+The installer is `desktop/dist/SignaturePDF-Setup-<version>.exe`. Releases are
+built automatically by GitHub Actions for `v*` tags and published with the
+installer and checksum. See [desktop/README.md](desktop/README.md) for details.
+Ghostscript is optional; if it is not installed, compression uses the browser
+engine.
 
 ## [Deploy with Docker](#docker)
 
