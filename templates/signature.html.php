@@ -40,7 +40,7 @@
     <div class="offcanvas offcanvas-end show d-none d-md-block shadow-sm" data-bs-backdrop="false" data-bs-scroll="true" data-bs-keyboard="false" tabindex="-1" id="sidebarTools" aria-labelledby="sidebarToolsLabel">
         <a id="btn_exit" class="btn btn-close btn-sm position-absolute d-none d-sm-none d-md-block" style="right: 16px; top: 16px;" title="<?php echo _("Close this PDF and return to the homepage"); ?>" href="<?php echo $REVERSE_PROXY_URL; ?>/signature"></a>
         <div class="offcanvas-header mb-0 pb-0">
-            <h5 class="mb-1 d-block w-100" id="sidebarToolsLabel"><i class="bi bi-vector-pen icon-sign"></i> <?php echo _("PDF Signature"); ?> <?php if(isset($hash)): ?><span class="badge chip chip-count" title="<?php echo _("This PDF is shared with others to be signed by multiple people"); ?>"><span class="nblayers"></span> <i class="bi bi-people-fill"></i></span><?php endif; ?></h5>
+            <h5 class="mb-1 d-block w-100" id="sidebarToolsLabel"><i class="bi bi-vector-pen icon-sign"></i> <?php echo _("PDF Signature"); ?> <?php if(isset($hash)): ?><span class="badge chip chip-count chip-count-sign" title="<?php echo _("This PDF is shared with others to be signed by multiple people"); ?>"><span class="nblayers"></span> <i class="bi bi-people-fill"></i></span><?php endif; ?></h5>
             <button type="button" class="btn-close text-reset d-md-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body pt-0">
@@ -118,7 +118,7 @@
                 <?php elseif(!isset($noSharingMode)): ?>
                   <div class="d-none d-sm-none d-md-block position-relative">
                       <a id="btn-signature-help" class="position-absolute top-0 end-0 text-dark" href="" style="z-index: 5;"><i class="bi bi-question-circle"></i></a>
-                      <p id="nblayers_text" class="small d-none mb-2 opacity-75"><?php echo sprintf(_("You are %s to have signed this PDF"), "<span class='badge chip chip-count'><span class='nblayers'>0</span> <i class='bi bi-people-fill'></i></span>"); ?></p>
+                      <p id="nblayers_text" class="small d-none mb-2 opacity-75"><?php echo sprintf(_("You are %s to have signed this PDF"), "<span class='badge chip chip-count chip-count-sign'><span class='nblayers'>0</span> <i class='bi bi-people-fill'></i></span>"); ?></p>
                   </div>
                   <div class="btn-group w-100">
                       <a id="btn_download" class="btn btn-outline-dark w-100" href="<?php echo $REVERSE_PROXY_URL; ?>/signature/<?php echo $hash ?>/pdf"><?php echo sprintf(_("%s Download the PDF"), '<i class="bi bi-download"></i>'); ?></a>

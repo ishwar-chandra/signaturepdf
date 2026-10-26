@@ -29,10 +29,10 @@
         <div class="bg-white sticky-top pt-2">
         <ul class="nav nav-tabs">
           <li class="nav-item ms-4">
-            <button type="button" id="nav-link-metadata" class="nav-link <?php echo ($ALIAS != 'ocr') ? "active" : null ?>" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#form-metadata"><?php echo _("Metadata") ?> <span class="badge chip chip-count ms-2"><span>0</span> <i class="bi bi-tags"></i></span></button>
+            <button type="button" id="nav-link-metadata" class="nav-link <?php echo ($ALIAS != 'ocr') ? "active" : null ?>" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#form-metadata"><?php echo _("Metadata") ?> <span class="badge chip chip-count chip-count-metadata ms-2"><span>0</span> <i class="bi bi-tags"></i></span></button>
           </li>
           <li class="nav-item ms-2">
-            <button type="button" id="nav-link-text" class="nav-link <?php echo ($ALIAS == 'ocr') ? "active" : null ?>" href="#" data-bs-toggle="tab" data-bs-target="#tab-text"><?php echo _("Text") ?> <span class="badge chip chip-count ms-2"></span></button>
+            <button type="button" id="nav-link-text" class="nav-link <?php echo ($ALIAS == 'ocr') ? "active" : null ?>" href="#" data-bs-toggle="tab" data-bs-target="#tab-text"><?php echo _("Text") ?> <span class="badge chip chip-count chip-count-text ms-2"></span></button>
           </li>
         </ul>
         </div>

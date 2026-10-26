@@ -293,11 +293,29 @@ html.rtl .file-list-checkbox {
     --sp-accent-strong: #4338ca;
     --sp-accent-cyan: #0891b2;
     --sp-accent-violet: #7c3aed;
-    --sp-icon-sign: #7c3aed;
-    --sp-icon-images: #0891b2;
-    --sp-icon-organize: #2563eb;
-    --sp-icon-metadata: #d97706;
-    --sp-icon-compress: #059669;
+    --sp-icon-indigo: #4f46e5;
+    --sp-icon-violet: #7c3aed;
+    --sp-icon-purple: #9333ea;
+    --sp-icon-blue: #2563eb;
+    --sp-icon-sky: #0284c7;
+    --sp-icon-cyan: #0891b2;
+    --sp-icon-teal: #0d9488;
+    --sp-icon-emerald: #059669;
+    --sp-icon-lime: #65a30d;
+    --sp-icon-amber: #d97706;
+    --sp-icon-orange: #ea580c;
+    --sp-icon-rose: #e11d48;
+    --sp-icon-pink: #db2777;
+    --sp-icon-sign: var(--sp-icon-violet);
+    --sp-icon-images: var(--sp-icon-cyan);
+    --sp-icon-organize: var(--sp-icon-blue);
+    --sp-icon-metadata: var(--sp-icon-amber);
+    --sp-icon-compress: var(--sp-icon-emerald);
+    --sp-chip-sky: #0369a1;
+    --sp-chip-lime: #4d7c0f;
+    --sp-chip-amber: #b45309;
+    --sp-chip-cyan: #0e7490;
+    --sp-chip-teal: #0f766e;
     --sp-chip-count-bg: rgba(79, 70, 229, .11);
     --sp-chip-count-fg: #4338ca;
     --sp-chip-count-border: rgba(79, 70, 229, .22);
@@ -326,11 +344,29 @@ html.rtl .file-list-checkbox {
     --sp-accent-strong: #a5b4fc;
     --sp-accent-cyan: #22d3ee;
     --sp-accent-violet: #a78bfa;
-    --sp-icon-sign: #a78bfa;
-    --sp-icon-images: #22d3ee;
-    --sp-icon-organize: #60a5fa;
-    --sp-icon-metadata: #fbbf24;
-    --sp-icon-compress: #34d399;
+    --sp-icon-indigo: #818cf8;
+    --sp-icon-violet: #a78bfa;
+    --sp-icon-purple: #c084fc;
+    --sp-icon-blue: #60a5fa;
+    --sp-icon-sky: #38bdf8;
+    --sp-icon-cyan: #22d3ee;
+    --sp-icon-teal: #2dd4bf;
+    --sp-icon-emerald: #34d399;
+    --sp-icon-lime: #a3e635;
+    --sp-icon-amber: #fbbf24;
+    --sp-icon-orange: #fb923c;
+    --sp-icon-rose: #fb7185;
+    --sp-icon-pink: #f472b6;
+    --sp-icon-sign: var(--sp-icon-violet);
+    --sp-icon-images: var(--sp-icon-cyan);
+    --sp-icon-organize: var(--sp-icon-blue);
+    --sp-icon-metadata: var(--sp-icon-amber);
+    --sp-icon-compress: var(--sp-icon-emerald);
+    --sp-chip-sky: #38bdf8;
+    --sp-chip-lime: #a3e635;
+    --sp-chip-amber: #fbbf24;
+    --sp-chip-cyan: #22d3ee;
+    --sp-chip-teal: #2dd4bf;
     --sp-chip-count-bg: rgba(129, 140, 248, .15);
     --sp-chip-count-fg: #c7d2fe;
     --sp-chip-count-border: rgba(129, 140, 248, .28);
@@ -357,6 +393,51 @@ body.bg-light {
 }
 
 /* Navigation and theme control */
+.header-layout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem 1rem;
+}
+
+.header-brand {
+    order: 1;
+    min-width: 0;
+}
+
+.header-nav {
+    order: 3;
+    flex: 0 0 100%;
+    justify-content: center;
+    margin-top: .25rem;
+}
+
+.header-controls {
+    order: 2;
+    margin-inline-start: auto;
+}
+
+@media (min-width: 768px) {
+    .header-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        gap: 1rem;
+    }
+
+    .header-nav {
+        order: 2;
+        flex: initial;
+        width: auto;
+        margin-top: 0;
+    }
+
+    .header-controls {
+        order: 3;
+        margin-inline-start: 0;
+        justify-self: end;
+    }
+}
+
 .nav-pills {
     gap: .25rem;
 }
@@ -453,30 +534,80 @@ body.bg-light {
     transform: scale(1.08);
 }
 
-.list-group-item[href*="/signature"] .bi,
-.list-group-item[href*="/image-to-pdf"] .bi,
-.list-group-item[href*="/organization"] .bi,
-.list-group-item[href*="/metadata"] .bi,
-.list-group-item[href*="/ocr"] .bi,
-.list-group-item[href*="/compress"] .bi {
-    color: var(--sp-icon-sign);
+.tool-column .list-group-item-action .bi-vector-pen {
+    color: var(--sp-icon-violet);
 }
 
-.list-group-item[href*="/image-to-pdf"] .bi {
-    color: var(--sp-icon-images);
+.tool-column .list-group-item-action .bi-type {
+    color: var(--sp-icon-blue);
 }
 
-.list-group-item[href*="/organization"] .bi {
-    color: var(--sp-icon-organize);
+.tool-column .list-group-item-action .bi-card-text {
+    color: var(--sp-icon-rose);
 }
 
-.list-group-item[href*="/metadata"] .bi,
-.list-group-item[href*="/ocr"] .bi {
-    color: var(--sp-icon-metadata);
+.tool-column .list-group-item-action .bi-textarea-t {
+    color: var(--sp-icon-cyan);
 }
 
-.list-group-item[href*="/compress"] .bi {
-    color: var(--sp-icon-compress);
+.tool-column .list-group-item-action .bi-type-strikethrough {
+    color: var(--sp-icon-orange);
+}
+
+.tool-column .list-group-item-action .bi-people-fill {
+    color: var(--sp-icon-teal);
+}
+
+.tool-column .list-group-item-action .bi-patch-check {
+    color: var(--sp-icon-emerald);
+}
+
+.tool-column .list-group-item-action .bi-droplet-half {
+    color: var(--sp-icon-sky);
+}
+
+.tool-column .list-group-item-action .bi-file-earmark-plus {
+    color: var(--sp-icon-indigo);
+}
+
+.tool-column .list-group-item-action .bi-arrows-move {
+    color: var(--sp-icon-purple);
+}
+
+.tool-column .list-group-item-action .bi-download {
+    color: var(--sp-icon-sky);
+}
+
+.tool-column .list-group-item-action .bi-arrow-clockwise {
+    color: var(--sp-icon-orange);
+}
+
+.tool-column .list-group-item-action .bi-rulers {
+    color: var(--sp-icon-lime);
+}
+
+.tool-column .list-group-item-action .bi-trash {
+    color: var(--sp-icon-rose);
+}
+
+.tool-column .list-group-item-action .bi-book {
+    color: var(--sp-icon-amber);
+}
+
+.tool-column .list-group-item-action .bi-images {
+    color: var(--sp-icon-cyan);
+}
+
+.tool-column .list-group-item-action .bi-tags {
+    color: var(--sp-icon-amber);
+}
+
+.tool-column .list-group-item-action .bi-upc-scan {
+    color: var(--sp-icon-pink);
+}
+
+.tool-column .list-group-item-action .bi-chevron-bar-contract {
+    color: var(--sp-icon-emerald);
 }
 
 /* Chips */
@@ -487,6 +618,7 @@ body.bg-light {
     padding: .28rem .68rem;
     border: 1px solid transparent;
     border-radius: 999px;
+    background: transparent;
     font-size: .72rem;
     font-weight: 700;
     line-height: 1;
@@ -499,21 +631,58 @@ body.bg-light {
 }
 
 .chip-new {
-    color: #fff !important;
-    background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 55%, #06b6d4 100%);
-    box-shadow: 0 .25rem .7rem rgba(79, 70, 229, .32);
+    --sp-chip-new-color: var(--sp-accent);
+    color: var(--sp-chip-new-color) !important;
+    background: transparent !important;
+    border-color: var(--sp-chip-new-color) !important;
+    box-shadow: none;
+}
+
+.chip-new-sky {
+    --sp-chip-new-color: var(--sp-chip-sky);
+}
+
+.chip-new-lime {
+    --sp-chip-new-color: var(--sp-chip-lime);
+}
+
+.chip-new-amber {
+    --sp-chip-new-color: var(--sp-chip-amber);
+}
+
+.chip-new-cyan {
+    --sp-chip-new-color: var(--sp-chip-cyan);
 }
 
 .chip-count {
     color: var(--sp-chip-count-fg) !important;
-    background: var(--sp-chip-count-bg);
+    background: transparent !important;
     border-color: var(--sp-chip-count-border) !important;
+}
+
+.chip-count:empty {
+    display: none;
+}
+
+.chip-count-sign {
+    color: var(--sp-chip-teal) !important;
+    border-color: var(--sp-chip-teal) !important;
+}
+
+.chip-count-metadata {
+    color: var(--sp-chip-amber) !important;
+    border-color: var(--sp-chip-amber) !important;
+}
+
+.chip-count-text {
+    color: var(--sp-chip-cyan) !important;
+    border-color: var(--sp-chip-cyan) !important;
 }
 
 .nav-pills .nav-link.active .chip-count {
     color: #fff !important;
-    background: rgba(255, 255, 255, .2);
-    border-color: rgba(255, 255, 255, .3) !important;
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, .75) !important;
 }
 
 .nav-pills .nav-link.active .chip-count .bi {
@@ -771,11 +940,17 @@ footer a:hover {
     outline-color: var(--sp-accent);
 }
 
-@media (max-width: 575.98px) {
-    .nav-pills {
-        padding-top: 2.4rem !important;
+@media (min-width: 1280px) {
+    .container {
+        max-width: 80rem;
     }
+}
 
+.tool-column .list-group-item.position-relative {
+    padding-inline-end: 5.75rem;
+}
+
+@media (max-width: 575.98px) {
     .theme-toggle,
     #dropdownMenuButton1 {
         padding: .35rem .6rem;
